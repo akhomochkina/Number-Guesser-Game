@@ -1,51 +1,132 @@
 #include <iostream>
+#include <cmath>
+#include <cctype>
+#include <stdlib.h>
+#include <ctime>
+#include<dos.h> 
+#include <windows.h> 
+
 using namespace std;
 
-int main()
+//function to get the guessed number from the player
+int GetGuess(int numberOfTries)
 {
-	/*
-
-	Pseudo code:
+	int guess;
+	bool failure;
 
 	do
 	{
-		Play the game
+		failure = false;
+		cout << "Please enter your guess (number of guesses left: " << numberOfTries << "): ";
+		cin >> guess;
 
-	} while (want to play again)
+		if (cin.fail())
+		{
+			cin.clear();
+			cin.ignore(256, '\n');
+			cout << "Input Error! Please try again!" << endl;
+			failure = true;
+		}
 
-	Play the game:
+	} while (failure);
 
-	1. set the secret number - set it to known value for now
-	2. set the number of guesses -> ceil(log2(100)) if range 1-100
+	return guess;
+}
 
-	do {
-	
-	3. promt the player to make a guess + output number of guesses left
-	4. get the guess from the player
-	5. check if the guess is correct (equal to secret number)
-		5a. If guess is not correct (not equal to secret number) then 
-			+ decrement number of guesses left
-			+ check if the guess was higher or lower than the secret number
-				- if higher -> print the guess is too high
-				- else if guess was lower -> print the guess is too low
+//function to determine if the game is over based on the guessed number or number of tries
+bool IsGameOver(int secretNumber, int numberOfTries, int guess)
+{
+	return secretNumber == guess || numberOfTries <= 0;
+}
 
-	} while (the game not over)
+//function to display results
+void DisplayResult(int secretNumber, int numberOfTries)
+{
+	if (numberOfTries > 0)
+		cout << "You got the correct number! Secret number was: " << secretNumber << endl << endl;
+	else cout << "You didn't get the number! Secret number was: " << secretNumber << endl << endl;
+}
 
-	Display result of the game - tell the player if they won or lost.
+//function containing logic for playing the game
+void PlayGame()
+{
+	const int UPPER_BOUND = 100;
+	int secretNumber = rand() % UPPER_BOUND;
+	int numberOfTries = ceil(log2(UPPER_BOUND));
+	int guess = 0;
 
-	Functions:
+	cout << "The range of the number is between 0 and 100" << endl << endl;
 
-	Play the game -> PlayGame();
-	Want to play again -> PlayAgain();
-	Get the guess from player -> GetGuess();
-	Game over -> IsGameOver();
-		(number of guesses left == 0 || guess == secret number);
-	Display results -> DisplayResult();
-		(if player guessed the number -> print they won and print the secret number);
-		(else print they lost and print the secret number);
+	do
+	{
+		guess = GetGuess(numberOfTries);
 
-	*/
+		if (guess != secretNumber)
+		{
+			numberOfTries--;
+			if (guess > secretNumber)
+				cout << "Your guess is too high!" << endl << endl;
+			else cout << "Your guess is too low!" << endl << endl;
+		}
+
+	} while (!IsGameOver(secretNumber, numberOfTries, guess));
+
+	DisplayResult(secretNumber, numberOfTries);
+}
+
+//function to determine whether or not the player want to play the game again
+bool PlayAgain()
+{
+	char input;
+	bool failure;
+
+	do
+	{
+		failure = false;
+		cout << endl << "Would you like to play another game? (y/n) ";
+		cin >> input;
 
 
+		if (cin.fail())
+		{
+			cin.clear();
+			cin.ignore(256, '\n');
+			cout << "Input Error! Please try again..." << endl;
+			failure = true;
+		}
+		else
+		{
+			//ignore characters and trasfer input to lower case
+			//so that it doesn't matter if it's upper or lower
+			cin.ignore(256, '\n');
+			input = tolower(input);
+		}
+
+	} while (failure);
+
+	return input == 'y';
+}
+
+int main()
+{
+	//create a handle - will be used to set color to the output text
+	HANDLE  handle;
+	handle = GetStdHandle(STD_OUTPUT_HANDLE);
+	//sets the text color to green
+	SetConsoleTextAttribute(handle, 2);
+
+	cout << "Welcome to Guess The Number Game!" << endl << endl;
+
+	//function to generate random number each time based on the internal clock
+	srand((unsigned int)time(NULL));
+
+	//starting the game
+	do
+	{
+		PlayGame();
+
+	} while (PlayAgain());
+
+	cout << "Thank you for playing, GoodBye!" << endl;
 	return 0;
 }
