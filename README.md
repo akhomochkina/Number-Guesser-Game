@@ -1,8 +1,10 @@
-Welcome to my C++ Guess The Number Game!
+# **Welcome to my C++ Guess The Number Game!**
+
+## This is a simple C++ game where the random number is generated and the player has to guess that number. The game will give hints if the player's number is too high or too low from the secret number.
 
 
 
-Pseudo code:
+**_Pseudo code:_**
 
 	do
 	{
@@ -12,7 +14,7 @@ Pseudo code:
 
 	Play the game:
 
-	1. set the secret number - set it to known value for now
+	1. generate the secret random number between 1-100
 	2. set the number of guesses -> ceil(log2(100)) if range 1-100
 
 	do {
